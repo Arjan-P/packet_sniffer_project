@@ -1,3 +1,0 @@
-matplotlib==3.10.8
-numpy==2.4.3
-scapy==2.7.0

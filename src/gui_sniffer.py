@@ -1,7 +1,9 @@
+import os
 import threading
 import csv
 import binascii
 import sqlite3
+from dotenv import load_dotenv
 from datetime import datetime
 from scapy.all import sniff, IP, TCP, UDP, Raw, get_if_list
 import tkinter as tk
@@ -9,13 +11,14 @@ from tkinter import ttk, messagebox
 import matplotlib.pyplot as plt
 from matplotlib.animation import FuncAnimation
 
+
 # ================= DATABASE =================
 
 def init_db():
     conn = sqlite3.connect("users.db")
     cur = conn.cursor()
     cur.execute("CREATE TABLE IF NOT EXISTS users (username TEXT, password TEXT)")
-    cur.execute("INSERT OR IGNORE INTO users VALUES (?, ?)", ("admin", "password"))
+    cur.execute("INSERT OR IGNORE INTO users VALUES (?, ?)", (os.getenv("APP_USER"), os.getenv("APP_PASSWORD")))
     conn.commit()
     conn.close()
 
@@ -49,6 +52,13 @@ total_bytes = 0
 
 traffic_counter = {}
 blacklisted_ips = set()
+
+# FTP (21)
+# SSH (22)
+# Telnet (23)
+# RDP (3389)
+# Backdoor ports (4444)
+# Proxy/web (8080)
 
 suspicious_ports = [21, 22, 23, 3389, 4444, 8080]
 
@@ -373,6 +383,7 @@ def launch_sniffer():
 # ================= MAIN =================
 
 if __name__ == "__main__":
+    load_dotenv()
     init_db()
     
     login_window = tk.Tk()
